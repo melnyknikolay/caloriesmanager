@@ -22,7 +22,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -57,6 +59,26 @@ public class MealServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+        String action = request.getParameter("action");
+        if (action != null){
+            if (action.equals("filterByDate")) {
+                LOG.info("filter by date");
+                request.setAttribute("mealList",
+                        UserMealsUtil.getFilteredByDateWithExceeded(repository.getAll(LoggedUser.id()),
+                                LocalDate.parse(request.getParameter("startDate").isEmpty() ? LocalDate.MIN.toString() : request.getParameter("startDate")),
+                                LocalDate.parse(request.getParameter("endDate").isEmpty() ? LocalDate.MAX.toString() : request.getParameter("endDate")),
+                                UserMealsUtil.DEFAULT_CALORIES_PER_DAY));
+                request.getRequestDispatcher("/mealList.jsp").forward(request, response);
+            }else if (action.equals("filterByTime")) {
+                LOG.info("filter by time");
+                request.setAttribute("mealList",
+                        UserMealsUtil.getFilteredWithExceeded(repository.getAll(LoggedUser.id()),
+                                LocalTime.parse(request.getParameter("startTime").isEmpty() ? LocalTime.MIN.toString() : request.getParameter("startTime")),
+                                LocalTime.parse(request.getParameter("endTime").isEmpty() ? LocalTime.MAX.toString() : request.getParameter("endTime")),
+                                UserMealsUtil.DEFAULT_CALORIES_PER_DAY));
+                request.getRequestDispatcher("/mealList.jsp").forward(request, response);
+            }
+        }
         String id = request.getParameter("id");
         String userId = request.getParameter("userId");
         UserMeal userMeal = new UserMeal(id.isEmpty() ? null : Integer.valueOf(id),
@@ -82,7 +104,7 @@ public class MealServlet extends HttpServlet {
             LOG.info("Delete {}", id);
             repository.delete(id, LoggedUser.id());
             response.sendRedirect("meals");
-        } else {
+        }else {
             final UserMeal meal = action.equals("create") ?
                     new UserMeal(LocalDateTime.now(), "", 1000) :
                     repository.get(getId(request), LoggedUser.id());
