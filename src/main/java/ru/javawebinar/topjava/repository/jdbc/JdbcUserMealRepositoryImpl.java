@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -71,19 +72,20 @@ public class JdbcUserMealRepositoryImpl implements UserMealRepository {
     @Override
     public UserMeal get(int id, int userId) {
         if (userId != LoggedUser.id())return null;
-        return jdbcTemplate.queryForObject("Select distinct from meals where id=?", ROW_MAPPER, id);
+        List<UserMeal> meals = jdbcTemplate.query("Select * from meals where id=?", ROW_MAPPER, id);
+        return DataAccessUtils.singleResult(meals);
     }
 
     @Override
     public List<UserMeal> getAll(int userId) {
         if (userId != LoggedUser.id())return Collections.emptyList();
-        return jdbcTemplate.query("select * from meals", ROW_MAPPER);
+        return jdbcTemplate.query("select * from meals ORDER BY datetime", ROW_MAPPER);
     }
 
     @Override
     public List<UserMeal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         if (userId != LoggedUser.id())return Collections.emptyList();
-        List<UserMeal> list = jdbcTemplate.query("select * from meals", ROW_MAPPER);
+        List<UserMeal> list = jdbcTemplate.query("select * from meals ORDER BY datetime", ROW_MAPPER);
         return list.stream().filter(um -> TimeUtil.isBetween(um.getDateTime(), startDate, endDate)).collect(Collectors.toList());
     }
 }
