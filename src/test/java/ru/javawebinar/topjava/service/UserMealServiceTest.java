@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -34,31 +35,25 @@ import static org.junit.Assert.*;
 public class UserMealServiceTest {
 
     @Rule
-    ExpectedException exception = ExpectedException.none();
-
-    @Rule
-    private static final Logger LOG = LoggerFactory.getLogger(UserMealServiceTest.class);
+    public ExpectedException exception = ExpectedException.none();
 
     @Autowired
     protected UserMealService service;
 
     @Test
     public void testDelete() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         service.delete(MealTestData.MEAL1_ID, USER_ID);
         MATCHER.assertCollectionEquals(Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2), service.getAll(USER_ID));
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void testDeleteNotFound() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         service.delete(MEAL1_ID, 1);
-        exception.expect(NotFoundException.class);
+       // exception.expect(NotFoundException.class);
     }
 
     @Test
     public void testSave() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         UserMeal created = getCreated();
         service.save(created, USER_ID);
         MATCHER.assertCollectionEquals(Arrays.asList(created, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1), service.getAll(USER_ID));
@@ -66,20 +61,17 @@ public class UserMealServiceTest {
 
     @Test
     public void testGet() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         UserMeal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
         MATCHER.assertEquals(ADMIN_MEAL, actual);
     }
 
     @Test(expected = NotFoundException.class)
     public void testGetNotFound() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
     @Test
     public void testUpdate() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         UserMeal updated = getUpdated();
         service.update(updated, USER_ID);
         MATCHER.assertEquals(updated, service.get(MEAL1_ID, USER_ID));
@@ -87,20 +79,17 @@ public class UserMealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void testNotFoundUpdate() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         UserMeal item = service.get(MEAL1_ID, USER_ID);
         service.update(item, ADMIN_ID);
     }
 
     @Test
     public void testGetAll() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         MATCHER.assertCollectionEquals(USER_MEALS, service.getAll(USER_ID));
     }
 
     @Test
     public void testGetBetween() throws Exception {
-        LOG.info(LocalDateTime.now().toString());
         MATCHER.assertCollectionEquals(Arrays.asList(MEAL3, MEAL2, MEAL1),
                 service.getBetweenDates(LocalDate.of(2015, Month.MAY, 30), LocalDate.of(2015, Month.MAY, 30), USER_ID));
     }
