@@ -31,6 +31,7 @@ public class UserMeal extends BaseEntity {
 
     @Column(name = "date_time", nullable = false)
     @NotNull
+   // @Convert(converter = )
     private LocalDateTime dateTime;
 
     @Column(name = "description", nullable = false)
