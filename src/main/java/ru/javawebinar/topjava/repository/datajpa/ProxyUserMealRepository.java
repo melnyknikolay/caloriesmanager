@@ -31,7 +31,7 @@ public interface ProxyUserMealRepository extends JpaRepository<UserMeal, Integer
     @Transactional
     @Modifying
     @Query("SELECT m FROM UserMeal m WHERE m.id=:id AND m.user.id=:userId")
-    UserMeal findOne(@Param("id") int id, @Param("userId") int userId);
+    List<UserMeal> get(@Param("id") int id, @Param("userId") int userId);
 
     @Transactional
     @Modifying

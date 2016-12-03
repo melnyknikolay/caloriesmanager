@@ -7,7 +7,9 @@ import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.repository.UserMealRepository;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * GKislin
@@ -26,7 +28,7 @@ public class DataJpaUserMealRepositoryImpl implements UserMealRepository{
     public UserMeal save(UserMeal userMeal, int userId) {
         User user = userProxy.findOne(userId);
         userMeal.setUser(user);
-        if (userMeal.isNew() || proxy.findOne(userMeal.getId(), userId) != null){
+        if (userMeal.isNew() || proxy.get(userMeal.getId(), userId) != null){
             return proxy.save(userMeal);
         }else
             return null;
@@ -39,7 +41,8 @@ public class DataJpaUserMealRepositoryImpl implements UserMealRepository{
 
     @Override
     public UserMeal get(int id, int userId) {
-        return proxy.findOne(id, userId);
+        List<UserMeal> list = proxy.get(id, userId);
+        return list.isEmpty() ? null : list.get(0);
     }
 
     @Override
