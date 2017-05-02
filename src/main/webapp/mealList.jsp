@@ -31,7 +31,7 @@
         <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.model.UserMealWithExceed"/>
             <tr class="${meal.exceed ? 'exceed': 'normal'}">
                 <td>
-                        ${meal.dateTime}
+                        ${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}
                 </td>
                 <td>
                         ${meal.description}
