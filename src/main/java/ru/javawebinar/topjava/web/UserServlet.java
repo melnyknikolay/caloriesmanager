@@ -20,14 +20,15 @@ public class UserServlet extends HttpServlet {
     private static final Logger LOG = getLogger(UserServlet.class);
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        LOG.debug("redirect to userList");
-        String s = request.getParameter("hero");
-        if (!s.isEmpty()){
-            LoggedUser.setId(Integer.valueOf(s));
-        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        LOG.debug("Login");
+        Integer userId = Integer.valueOf(request.getParameter("userId"));
+        LoggedUser.setId(userId);
 
 
 //        request.getRequestDispatcher("/userList.jsp").forward(request, response);
-        response.sendRedirect("userList.jsp");
+        response.sendRedirect("meals");
     }
 }
