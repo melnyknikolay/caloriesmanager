@@ -4,8 +4,5 @@ target
 *.iml
 log
 units
-
-
-
-
+*.patch
 
